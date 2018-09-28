@@ -105,6 +105,7 @@ public abstract class InnerConn<T extends Closeable> implements Closeable {
     @Override
     public void close() throws IOException {
         if (socket != null) socket.close();
+        if (shadowSocket != null) shadowSocket.close();
         connState = CONN_STATE_CLOSED;
         LOG.info("NATConnection connState {}", connState);
     }
