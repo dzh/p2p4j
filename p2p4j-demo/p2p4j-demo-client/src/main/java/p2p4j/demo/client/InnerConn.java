@@ -10,6 +10,7 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import p2p4j.demo.client.protocol.CallbackPeerHandler;
 import p2p4j.demo.client.protocol.CheckConeNatHandler;
 import p2p4j.demo.client.protocol.CheckSymmetricNatHandler;
 import p2p4j.demo.client.protocol.OutAddrHandler;
@@ -117,6 +118,7 @@ public abstract class InnerConn<T extends Closeable> implements Closeable {
         handlers.add(new WorkflowProxyHandler(this));
         handlers.add(new TraversalReqHandler(this));
         handlers.add(new TraversalRspHandler(this));
+        handlers.add(new CallbackPeerHandler(this));
     }
 
     private InetSocketAddress parseSocketAddress(String addr) {

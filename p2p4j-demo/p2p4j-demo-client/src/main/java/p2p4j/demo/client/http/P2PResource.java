@@ -50,6 +50,7 @@ public class P2PResource {
         Map<String, Object> data = new HashMap<>();
         data.put("natType", Plugin.client().getNatType());
         data.put("outAddr", Plugin.client().getOutAddr());
+        data.put("clientId", Plugin.client().getClientId());
 
         Result<Map<String, Object>> r = new Result<>();
         r.setData(data);

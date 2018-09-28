@@ -19,7 +19,10 @@ public interface ProtocolType {
     int REQ_CHECK_CONE_PARTNER = 5;// 检查是否锥形NAT，请求端口的另一台机器返回
     int REQ_EXCHANGE_PEER_INFO = 6; // 交换对等节点信息，包括Peer的outAddr和NatType
 
+    int REQ_CALLBACK_PEER_INFO = 7; // 通知另一个节点对自己发消息
+
     int REQ_TRAVERSAL_ADD = 1000; // 透传请求加法
+    int REQ_TRAVERSAL_PING = 1001; // 连接透传的ping
 
     //////////////////////////////////////////////////////////
 
@@ -30,6 +33,7 @@ public interface ProtocolType {
     int RSP_CHECK_CONE_SHADOW = 10004;// 检查是否锥形NAT,请求端口的另一个端口返回消息
     int RSP_CHECK_CONE_PARTNER = 10005;// 检查是否锥形NAT,请求端口的另一台机器返回
     int RSP_EXCHANGE_PEER_INFO = 10006; //
+    int RSP_CALLBACK_PEER_INFO = 7; // 通知另一个节点对自己发消息
 
     int RSP_TRAVERSAL_ADD = 11000; // 响应透传请求加法的结果
 

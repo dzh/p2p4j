@@ -109,6 +109,7 @@ public class ExchangePeerInfoWork extends P2PWorkflow<PeerInfo> {
         if (peerInfo.getNatType().getType() == NatType.FULL_CONE.getType()) {
             FullConeNatPeerWork workFlow = new FullConeNatPeerWork(this.client());
             workFlow.setFullCone(peerInfo);
+
             return workFlow;
         }
         // TODO

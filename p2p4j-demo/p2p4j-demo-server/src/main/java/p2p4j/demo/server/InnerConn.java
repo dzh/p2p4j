@@ -12,6 +12,7 @@ import org.slf4j.LoggerFactory;
 
 import p2p4j.demo.model.P2P4jDemoConst;
 import p2p4j.demo.model.SimpleDemoProtocol;
+import p2p4j.demo.server.protocol.CallbackPeerHandler;
 import p2p4j.demo.server.protocol.CheckConeTypeHandler;
 import p2p4j.demo.server.protocol.ExchangePeerInfoHandler;
 import p2p4j.demo.server.protocol.OutAddrHandler;
@@ -73,6 +74,7 @@ public abstract class InnerConn<T extends Closeable> implements Closeable {
         handlers.add(new OutAddrHandler(this));
         handlers.add(new CheckConeTypeHandler(this));
         handlers.add(new ExchangePeerInfoHandler(this));
+        handlers.add(new CallbackPeerHandler(this));
     }
 
     private InetSocketAddress parseSocketAddress(String addr) {

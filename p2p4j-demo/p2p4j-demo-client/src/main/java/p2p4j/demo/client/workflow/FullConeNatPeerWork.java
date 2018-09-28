@@ -53,6 +53,19 @@ public class FullConeNatPeerWork extends PeerConnWork {
             p.setData(data);
             client().conn().send(p, fullCone.getOutAddr());
 
+            // 回调
+            p = SimpleDemoProtocol.create(ProtocolType.REQ_CALLBACK_PEER_INFO);
+            p.setClientId(client().getClientId());
+            p.setNatType(client().getNatType().getType());
+            data = new HashMap<>();
+            data.put(SimpleDemoProtocol.K_CLIENT_ID, fullCone.getClientId());
+            p.setData(data);
+            try {
+                client().conn().send2Nat(p);
+            } catch (IOException e) {
+                LOG.error(e.getMessage(), e);
+            }
+
             Thread.sleep(3000);
             ++retries;
         }
