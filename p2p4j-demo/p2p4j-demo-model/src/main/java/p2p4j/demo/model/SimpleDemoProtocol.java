@@ -46,8 +46,10 @@ public class SimpleDemoProtocol implements ProtocolType {
 
     public SimpleDemoProtocol fork(int type) {
         SimpleDemoProtocol newP = SimpleDemoProtocol.create(type);
-        newP.setId(this.getId());
-        newP.setData(new HashMap<String, String>(data));
+        newP.setId(this.id);
+        if (data != null) {
+            newP.setData(new HashMap<String, String>(data));
+        }
         return newP;
     }
 
