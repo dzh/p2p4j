@@ -14,6 +14,7 @@ import p2p4j.demo.model.P2P4jDemoConst;
 import p2p4j.demo.model.SimpleDemoProtocol;
 import p2p4j.demo.server.protocol.CheckConeTypeHandler;
 import p2p4j.demo.server.protocol.OutAddrHandler;
+import p2p4j.demo.server.protocol.PingHandler;
 import p2p4j.demo.server.protocol.ProtocolHandler;
 
 /**
@@ -67,6 +68,7 @@ public abstract class InnerConn<T extends Closeable> implements Closeable {
 
     private void registerProtocolHandler() {
         pHandlers = new LinkedList<>();
+        pHandlers.add(new PingHandler(this));
         pHandlers.add(new OutAddrHandler(this));
         pHandlers.add(new CheckConeTypeHandler(this));
     }

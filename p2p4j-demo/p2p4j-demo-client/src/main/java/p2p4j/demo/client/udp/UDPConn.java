@@ -5,6 +5,7 @@ import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetSocketAddress;
 import java.net.SocketException;
+import java.net.SocketTimeoutException;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -69,6 +70,8 @@ public class UDPConn extends InnerConn<DatagramSocket> {
 
                     String json = new String(p.getData(), 0, p.getLength(), SimpleDemoProtocol.ENCODING);
                     receiveProtocol(SimpleDemoProtocol.decode(json), (InetSocketAddress) p.getSocketAddress());
+                } catch (SocketTimeoutException e) {
+                    // ignore receive timeout
                 } catch (Exception e) {
                     LOG.error(e.getMessage(), e);
                 }
@@ -130,7 +133,7 @@ public class UDPConn extends InnerConn<DatagramSocket> {
                     LOG.error(e.getMessage(), e);
                 }
                 try {
-                    Thread.sleep(3000);
+                    Thread.sleep(5000);
                 } catch (InterruptedException e) {}
             }
             LOG.info("UDPConn startReceiveThread stopped!");
