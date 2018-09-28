@@ -30,3 +30,4 @@ hs_err_pid*
 **/conf/config.properties
 **/conf/vmargs
 filter.properties
+**/tmp/

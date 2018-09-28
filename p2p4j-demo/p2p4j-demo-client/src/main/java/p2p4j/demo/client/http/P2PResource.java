@@ -84,7 +84,10 @@ public class P2PResource {
     public Result<String> connClient(@Context UriInfo ui, @PathParam("clientId") String clientId) {
         LOG.info("{}", ui.getPath());
 
+        Plugin.client().connPeer(clientId);
+
         Result<String> r = new Result<>();
+        r.setData(clientId);
         // r.setData(ManagementFactory.getRuntimeMXBean().getName() + " " + System.currentTimeMillis());
         return r;
     }
