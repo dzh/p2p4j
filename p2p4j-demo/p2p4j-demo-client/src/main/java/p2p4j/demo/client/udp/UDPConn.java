@@ -133,7 +133,7 @@ public class UDPConn extends InnerConn<DatagramSocket> {
                     LOG.error(e.getMessage(), e);
                 }
                 try {
-                    Thread.sleep(5000);
+                    Thread.sleep(10000);
                 } catch (InterruptedException e) {}
             }
             LOG.info("UDPConn startReceiveThread stopped!");

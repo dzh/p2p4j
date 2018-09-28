@@ -12,6 +12,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import jframe.core.plugin.DefPlugin;
+import p2p4j.demo.client.http.P2PResource;
 import p2p4j.demo.client.http.TestResource;
 import p2p4j.demo.model.P2P4jDemoConst;
 
@@ -36,7 +37,7 @@ class ApiHttpServer extends Application {
     public Set<Class<?>> getClasses() {
         HashSet<Class<?>> classes = new HashSet<Class<?>>();
         classes.add(TestResource.class);
-
+        classes.add(P2PResource.class);
         return classes;
     }
 

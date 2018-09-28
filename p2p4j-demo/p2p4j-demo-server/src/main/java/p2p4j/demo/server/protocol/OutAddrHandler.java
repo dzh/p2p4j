@@ -40,7 +40,7 @@ public class OutAddrHandler extends ProtocolHandler {
      */
     @Override
     public void handle(SimpleDemoProtocol p, InetSocketAddress remote) {
-        SimpleDemoProtocol rsp = SimpleDemoProtocol.create(ProtocolType.RSP_OUT_ADDR);
+        SimpleDemoProtocol rsp = SimpleDemoProtocol.create(10000 + p.getType());
         Map<String, String> data = new HashMap<>();
         data.put(SimpleDemoProtocol.K_IP, remote.getAddress().getHostAddress());
         data.put(SimpleDemoProtocol.K_PORT, String.valueOf(remote.getPort()));

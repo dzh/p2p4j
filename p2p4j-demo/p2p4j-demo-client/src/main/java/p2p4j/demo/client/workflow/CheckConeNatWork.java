@@ -44,7 +44,8 @@ public class CheckConeNatWork extends P2PWorkflow<NatType> {
 
             int size = rspTypes.size();
             if (size > 0) {
-                if (rspTypes.contains(ProtocolType.RSP_CHECK_CONE_PARTNER)) {
+                this.setState(S_SUCC);
+                if (rspTypes.contains(ProtocolType.RSP_CHECK_CONE_PARTNER)) {// TODO 这里的判断不完整，但满足需要
                     return NatType.FULL_CONE;
                 } else if (rspTypes.contains(ProtocolType.RSP_CHECK_CONE_SHADOW)) {
                     return NatType.RESTRICTED_CONE;
@@ -55,7 +56,8 @@ public class CheckConeNatWork extends P2PWorkflow<NatType> {
 
             ++retries;
         }
-        // TODO
+
+        this.setState(S_FAIL);
         return NatType.CONE;
     }
 
@@ -69,7 +71,8 @@ public class CheckConeNatWork extends P2PWorkflow<NatType> {
         NatType natType = (NatType) value;
 
         client().setNatType(natType);
-        return new ExchangePeerInfoWork(client());
+        // return new ExchangePeerInfoWork(client());
+        return null;
     }
 
     @Override

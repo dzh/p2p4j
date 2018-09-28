@@ -5,6 +5,8 @@ import java.net.InetSocketAddress;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -27,6 +29,8 @@ public class CheckSymmetricNatWork extends P2PWorkflow<NatType> {
     // (id,outAddress)
     private Map<String, InetSocketAddress> checkSymm = Collections.synchronizedMap(new HashMap<String, InetSocketAddress>(2, 1));
 
+    private CountDownLatch recvPeerLatch;
+
     public CheckSymmetricNatWork(P2P4jDemoClient client) {
         super(client);
     }
@@ -35,9 +39,9 @@ public class CheckSymmetricNatWork extends P2PWorkflow<NatType> {
     public NatType call() throws Exception {
         int retries = 0;
         while (true) {
-            if (retries > 10) {
-                this.setState(S_FAIL);
-                LOG.error("CheckSymmetricNatWork overflow max-retries {}", 10);
+            if (retries > 3) {
+                setState(S_FAIL);
+                LOG.error("CheckSymmetricNatWork overflow max-retries {}", 3);
                 break;
             }
 
@@ -50,48 +54,55 @@ public class CheckSymmetricNatWork extends P2PWorkflow<NatType> {
             client().conn().send2Predict(p);
             checkSymm.put(p.getId(), null);
 
-            Thread.sleep(3000); // 5s后没有返回或者没有检查通过就重试
+            recvPeerLatch = new CountDownLatch(2);
+            if (recvPeerLatch.await(5000, TimeUnit.SECONDS)) {
+                InetSocketAddress[] outAddrs = checkSymm.values().toArray(new InetSocketAddress[2]);
+                InetSocketAddress outAddr1 = outAddrs[0];
+                InetSocketAddress outAddr2 = outAddrs[1];
+                if (outAddr1 != null && outAddr2 != null) {
+                    this.setState(S_SUCC);
 
-            InetSocketAddress[] outAddrs = checkSymm.values().toArray(new InetSocketAddress[2]);
-            InetSocketAddress outAddr1 = outAddrs[0];
-            InetSocketAddress outAddr2 = outAddrs[1];
-            if (outAddr1 != null && outAddr2 != null) {
-                this.setState(S_SUCC);
-
-                if (outAddr1.equals(outAddr2)) {
-                    LOG.info("local nat is some cone");
-                    break;
-                } else {
-                    LOG.info("local nat is symmetric");
-                    return NatType.SYMMETRIC;
+                    if (outAddr1.equals(outAddr2)) {
+                        LOG.info("local nat is some cone");
+                        return NatType.CONE;
+                    } else {
+                        LOG.info("local nat is symmetric");
+                        return NatType.SYMMETRIC;
+                    }
                 }
             } else { // retry
-                LOG.warn("SymmetricNatWork checked timeout! outAddr: {},{}", outAddr1, outAddr2);
+                LOG.warn("SymmetricNatWork checked timeout! checkSymm: {}", checkSymm);
                 ++retries;
             }
         }
-        return NatType.CONE;
+        this.setState(S_FAIL);
+        return NatType.UNKNOWN;
     }
 
     @Override
     public void signal(SimpleDemoProtocol p) {
-        String id = p.getData().get(SimpleDemoProtocol.K_REQ_ID);
-        if (checkSymm.containsKey(id)) {
-            String ip = p.getData().get(SimpleDemoProtocol.K_IP);
-            String port = p.getData().get(SimpleDemoProtocol.K_PORT);
-            InetSocketAddress isa = new InetSocketAddress(ip, Integer.parseInt(port));
-            checkSymm.put(id, isa);
+        if (p.getType() == ProtocolType.RSP_CHECK_SYMMETRIC) {
+            String id = p.getData().get(SimpleDemoProtocol.K_REQ_ID);
+            if (checkSymm.containsKey(id)) {
+                String ip = p.getData().get(SimpleDemoProtocol.K_IP);
+                String port = p.getData().get(SimpleDemoProtocol.K_PORT);
+                InetSocketAddress isa = new InetSocketAddress(ip, Integer.parseInt(port));
+                checkSymm.put(id, isa);
+
+                recvPeerLatch.countDown();
+            }
         }
     }
 
     @Override
     public P2PWorkflow<?> next(Object value) {
         NatType natType = (NatType) value;
-        if (natType == NatType.SYMMETRIC) {
-            client().setNatType(natType);
-            return new ExchangePeerInfoWork(client());
-        }
+        client().setNatType(natType);
 
+        if (natType == NatType.SYMMETRIC) {
+            // return new ExchangePeerInfoWork(client());
+            return null;
+        }
         return new CheckConeNatWork(this.client());// 检查cone类型
     }
 
