@@ -57,6 +57,21 @@ public class P2PResource {
         return r;
     }
 
+    @GET
+    @Path("peer/{clientId}")
+    public Result<Map<String, Object>> peerInfo(@Context UriInfo ui, @PathParam("clientId") String clientId) {
+        LOG.info("{}", ui.getPath());
+
+        Map<String, Object> data = new HashMap<>();
+        data.put("natType", Plugin.client().getNatType());
+        data.put("outAddr", Plugin.client().getOutAddr());
+
+        Result<Map<String, Object>> r = new Result<>();
+        r.setData(data);
+
+        return r;
+    }
+
     /**
      * 建立p2p连接
      * 
@@ -65,9 +80,10 @@ public class P2PResource {
      * @return
      */
     @GET
-    @Path("conn/{token}")
-    public Result<String> connToken(@Context UriInfo ui, @PathParam("token") String token) {
+    @Path("conn/{clientId}")
+    public Result<String> connClient(@Context UriInfo ui, @PathParam("clientId") String clientId) {
         LOG.info("{}", ui.getPath());
+
         Result<String> r = new Result<>();
         // r.setData(ManagementFactory.getRuntimeMXBean().getName() + " " + System.currentTimeMillis());
         return r;
@@ -81,8 +97,8 @@ public class P2PResource {
      * @return
      */
     @GET
-    @Path("disconn/{token}")
-    public Result<String> disconnToken(@Context UriInfo ui, @PathParam("token") String token) {
+    @Path("disconn/{clientId}")
+    public Result<String> disconnClient(@Context UriInfo ui, @PathParam("clientId") String clientId) {
         LOG.info("{}", ui.getPath());
         Result<String> r = new Result<>();
         // r.setData(ManagementFactory.getRuntimeMXBean().getName() + " " + System.currentTimeMillis());

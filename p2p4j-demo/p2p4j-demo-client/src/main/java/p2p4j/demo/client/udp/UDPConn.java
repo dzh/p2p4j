@@ -128,6 +128,8 @@ public class UDPConn extends InnerConn<DatagramSocket> {
 
                 SimpleDemoProtocol p = SimpleDemoProtocol.create(ProtocolType.REQ_PING);
                 try {
+                    p.setClientId(UDPConn.this.client().getClientId());
+                    p.setNatType(UDPConn.this.client().getNatType().getType());
                     UDPConn.this.send2Nat(p);
                 } catch (IOException e) {
                     LOG.error(e.getMessage(), e);

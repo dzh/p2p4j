@@ -8,6 +8,8 @@ import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import p2p4j.demo.model.NatType;
+import p2p4j.demo.model.PeerInfo;
 import p2p4j.demo.model.ProtocolType;
 import p2p4j.demo.model.SimpleDemoProtocol;
 import p2p4j.demo.server.InnerConn;
@@ -47,6 +49,13 @@ public class PingHandler extends ProtocolHandler {
         data.put(SimpleDemoProtocol.K_PORT, String.valueOf(remoteAddr.getPort()));
         data.put(SimpleDemoProtocol.K_REQ_ID, p.getId());
         rsp.setData(data);
+
+        // update peerInfo TODO
+        PeerInfo peerInfo = new PeerInfo();
+        peerInfo.setOutAddr(remoteAddr);
+        peerInfo.setNatType(NatType.find(p.getNatType()));
+        peerInfo.setClientId(p.getClientId());
+        conn().server().peerInfo().put(p.getClientId(), peerInfo);
 
         try {
             conn().send(rsp, remoteAddr);

@@ -72,6 +72,8 @@ public class CheckConeNatWork extends P2PWorkflow<NatType> {
 
         client().setNatType(natType);
         // return new ExchangePeerInfoWork(client());
+
+        LOG.info("{} natType is {}", client().getClientId(), natType);
         return null;
     }
 

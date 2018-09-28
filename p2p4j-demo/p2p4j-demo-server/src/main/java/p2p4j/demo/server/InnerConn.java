@@ -13,6 +13,7 @@ import org.slf4j.LoggerFactory;
 import p2p4j.demo.model.P2P4jDemoConst;
 import p2p4j.demo.model.SimpleDemoProtocol;
 import p2p4j.demo.server.protocol.CheckConeTypeHandler;
+import p2p4j.demo.server.protocol.ExchangePeerInfoHandler;
 import p2p4j.demo.server.protocol.OutAddrHandler;
 import p2p4j.demo.server.protocol.PingHandler;
 import p2p4j.demo.server.protocol.ProtocolHandler;
@@ -64,13 +65,14 @@ public abstract class InnerConn<T extends Closeable> implements Closeable {
         LOG.info("NATConnection connState {}", connState);
     }
 
-    private List<ProtocolHandler> pHandlers;
+    private List<ProtocolHandler> handlers;
 
     private void registerProtocolHandler() {
-        pHandlers = new LinkedList<>();
-        pHandlers.add(new PingHandler(this));
-        pHandlers.add(new OutAddrHandler(this));
-        pHandlers.add(new CheckConeTypeHandler(this));
+        handlers = new LinkedList<>();
+        handlers.add(new PingHandler(this));
+        handlers.add(new OutAddrHandler(this));
+        handlers.add(new CheckConeTypeHandler(this));
+        handlers.add(new ExchangePeerInfoHandler(this));
     }
 
     private InetSocketAddress parseSocketAddress(String addr) {
@@ -83,7 +85,7 @@ public abstract class InnerConn<T extends Closeable> implements Closeable {
     // 接收的数据包
     public void receiveProtocol(SimpleDemoProtocol p, InetSocketAddress remote) {
         LOG.info("{} -> {}", remote, p);
-        for (ProtocolHandler ph : pHandlers) {
+        for (ProtocolHandler ph : handlers) {
             if (ph.accept(p)) {
                 ph.handle(p, remote);
             }
@@ -126,12 +128,8 @@ public abstract class InnerConn<T extends Closeable> implements Closeable {
 
     public abstract void sendShadow(SimpleDemoProtocol p, InetSocketAddress remote) throws IOException;
 
-    public void sendPartner(SimpleDemoProtocol p) {
-        try {
-            send(p, partnerAddr);
-        } catch (IOException e) {
-            LOG.error(e.getMessage(), e); // TODO
-        }
+    public void sendPartner(SimpleDemoProtocol p) throws IOException {
+        send(p, partnerAddr);
     }
 
 }

@@ -1,9 +1,14 @@
 package p2p4j.demo.client.workflow;
 
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.concurrent.ThreadLocalRandom;
 
 import p2p4j.demo.client.P2P4jDemoClient;
 import p2p4j.demo.client.PeerConn;
+import p2p4j.demo.model.PeerInfo;
+import p2p4j.demo.model.ProtocolType;
 import p2p4j.demo.model.SimpleDemoProtocol;
 
 /**
@@ -12,6 +17,8 @@ import p2p4j.demo.model.SimpleDemoProtocol;
  * @version 0.0.1
  */
 public class FullConeNatPeerWork extends PeerConnWork {
+
+    private PeerInfo fullCone;
 
     public FullConeNatPeerWork(P2P4jDemoClient client) {
         super(client);
@@ -23,7 +30,33 @@ public class FullConeNatPeerWork extends PeerConnWork {
      */
     @Override
     public PeerConn call() throws Exception {
-        // TODO Auto-generated method stub
+        int retries = 0;
+        while (true) {
+            boolean closed = this.client().isClosed();
+            if (closed) {
+                break;
+            }
+            if (retries > 10) {
+                setState(S_SUCC);
+                LOG.error("FullConeNatPeerWork overflow max-retries {}", 10);
+                break;
+            }
+
+            // 发送获取连接请求
+            SimpleDemoProtocol p = SimpleDemoProtocol.create(ProtocolType.REQ_TRAVERSAL_ADD);
+            p.setClientId(client().getClientId());
+            p.setNatType(client().getNatType().getType());
+
+            Map<String, String> data = new HashMap<>();
+            data.put(SimpleDemoProtocol.K_ADD_A, String.valueOf(ThreadLocalRandom.current().nextInt(1, 100)));
+            data.put(SimpleDemoProtocol.K_ADD_B, String.valueOf(ThreadLocalRandom.current().nextInt(1, 100)));
+            p.setData(data);
+            client().conn().send(p, fullCone.getOutAddr());
+
+            Thread.sleep(3000);
+            ++retries;
+        }
+        // this.setState(S_FAIL);
         return null;
     }
 
@@ -33,7 +66,6 @@ public class FullConeNatPeerWork extends PeerConnWork {
      */
     @Override
     public void close() throws IOException {
-        // TODO Auto-generated method stub
 
     }
 
@@ -43,7 +75,6 @@ public class FullConeNatPeerWork extends PeerConnWork {
      */
     @Override
     public void signal(SimpleDemoProtocol p) {
-        // TODO Auto-generated method stub
 
     }
 
@@ -53,8 +84,15 @@ public class FullConeNatPeerWork extends PeerConnWork {
      */
     @Override
     public P2PWorkflow<?> next(Object value) {
-        // TODO Auto-generated method stub
         return null;
+    }
+
+    public PeerInfo getFullCone() {
+        return fullCone;
+    }
+
+    public void setFullCone(PeerInfo fullCone) {
+        this.fullCone = fullCone;
     }
 
 }

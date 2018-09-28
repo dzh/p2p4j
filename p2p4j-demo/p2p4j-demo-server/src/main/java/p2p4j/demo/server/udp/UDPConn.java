@@ -93,6 +93,7 @@ public class UDPConn extends InnerConn<DatagramSocket> {
 
     @Override
     public void sendShadow(SimpleDemoProtocol p, InetSocketAddress remote) throws IOException {
+        LOG.info("{} -> {}", p, remote);
         byte[] data = p.encode();
         if (data.length > SimpleDemoProtocol.MAX_SIZE) {
             LOG.error("overflow max-size {}", data);

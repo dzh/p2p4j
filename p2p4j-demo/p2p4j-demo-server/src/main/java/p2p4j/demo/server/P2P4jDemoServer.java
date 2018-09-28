@@ -2,10 +2,13 @@ package p2p4j.demo.server;
 
 import java.io.Closeable;
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import p2p4j.demo.model.PeerInfo;
 import p2p4j.demo.server.udp.UDPConn;
 
 /**
@@ -20,6 +23,8 @@ public class P2P4jDemoServer implements Closeable {
     private P2P4jDemoServerPlugin plugin;
 
     private InnerConn<?> conn;
+
+    private Map<String, PeerInfo> peerInfo = new HashMap<>();
 
     public P2P4jDemoServer(P2P4jDemoServerPlugin plugin) {
         this.plugin = plugin;
@@ -36,10 +41,15 @@ public class P2P4jDemoServer implements Closeable {
     @Override
     public void close() throws IOException {
         if (conn != null) conn.close();
+        peerInfo.clear();
     }
 
     public void initConn() throws IOException {
         conn = new UDPConn(this);
+    }
+
+    public Map<String, PeerInfo> peerInfo() {
+        return peerInfo;
     }
 
 }

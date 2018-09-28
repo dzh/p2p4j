@@ -24,12 +24,21 @@ public class SimpleDemoProtocol implements ProtocolType {
     public static final String K_REQ_ID = "req_id"; // 服务端返回时带源id
     public static final String K_NAT_TYPE = "nat_type";
     public static final String K_TOKEN = "token";
+    public static final String K_CLIENT_ID = "client_id";
+
+    public static final String K_ADD_A = "add_a";
+    public static final String K_ADD_B = "add_b";
+    public static final String K_ADD_R = "add_r";
 
     // public static final String K_REMOTESERVER = "removeServer"; // nat or predict
     // public static final String V_REMOTESERVER_NAT = "nat";
     // public static final String V_REMOTESERVER_PREDICT = "predict";
 
     private int type;
+
+    private String clientId;
+
+    private int natType;
 
     private String id; // 每个消息包都有一个唯一的id
 
@@ -78,6 +87,14 @@ public class SimpleDemoProtocol implements ProtocolType {
         this.data = data;
     }
 
+    public String getClientId() {
+        return clientId;
+    }
+
+    public void setClientId(String clientId) {
+        this.clientId = clientId;
+    }
+
     public byte[] encode() {
         try {
             return GsonUtil.toJson(this).getBytes(ENCODING);
@@ -94,6 +111,14 @@ public class SimpleDemoProtocol implements ProtocolType {
     @Override
     public String toString() {
         return GsonUtil.toJson(this);
+    }
+
+    public int getNatType() {
+        return natType;
+    }
+
+    public void setNatType(int natType) {
+        this.natType = natType;
     }
 
 }

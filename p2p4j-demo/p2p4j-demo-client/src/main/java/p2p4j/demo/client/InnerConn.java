@@ -15,6 +15,9 @@ import p2p4j.demo.client.protocol.CheckSymmetricNatHandler;
 import p2p4j.demo.client.protocol.OutAddrHandler;
 import p2p4j.demo.client.protocol.PingHandler;
 import p2p4j.demo.client.protocol.ProtocolHandler;
+import p2p4j.demo.client.protocol.TraversalReqHandler;
+import p2p4j.demo.client.protocol.TraversalRspHandler;
+import p2p4j.demo.client.protocol.WorkflowProxyHandler;
 import p2p4j.demo.model.P2P4jDemoConst;
 import p2p4j.demo.model.ProtocolType;
 import p2p4j.demo.model.SimpleDemoProtocol;
@@ -111,6 +114,9 @@ public abstract class InnerConn<T extends Closeable> implements Closeable {
         handlers.add(new CheckSymmetricNatHandler(this));
         handlers.add(new CheckConeNatHandler(this));
         handlers.add(new PingHandler(this));
+        handlers.add(new WorkflowProxyHandler(this));
+        handlers.add(new TraversalReqHandler(this));
+        handlers.add(new TraversalRspHandler(this));
     }
 
     private InetSocketAddress parseSocketAddress(String addr) {

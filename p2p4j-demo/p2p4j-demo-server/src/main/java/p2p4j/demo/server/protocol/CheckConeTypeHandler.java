@@ -54,7 +54,11 @@ public class CheckConeTypeHandler extends ProtocolHandler {
             data.put(SimpleDemoProtocol.K_IP, remote.getAddress().getHostAddress());
             data.put(SimpleDemoProtocol.K_PORT, String.valueOf(remote.getPort()));
             req.setData(data);
-            conn().sendPartner(req);
+            try {
+                conn().sendPartner(req);
+            } catch (IOException e) {
+                LOG.error(e.getMessage(), e);
+            }
             break;
         }
         case ProtocolType.REQ_CHECK_CONE_SHADOW: {

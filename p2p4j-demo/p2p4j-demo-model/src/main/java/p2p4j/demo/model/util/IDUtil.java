@@ -26,4 +26,9 @@ public class IDUtil {
         return buf.toString();
     }
 
+    public static final String clientID() {
+        String hash = Integer.toHexString(ManagementFactory.getRuntimeMXBean().getName().hashCode());
+        return hash;
+    }
+
 }
